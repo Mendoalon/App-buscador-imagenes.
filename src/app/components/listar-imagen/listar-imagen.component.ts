@@ -14,53 +14,78 @@ export class ListarImagenComponent implements OnInit {
   loading: boolean = false;
   imagenesPorPaginas: number = 30;
   paginaActual: number = 1;
-  calcularTotalPaginas: number =0;
+  calcularTotalPaginas: number = 0;
 
   constructor(private _imagenesService: ImagenesService) {
-    this.subscription = this._imagenesService.getTerminoBusqueda().subscribe(data =>{
-      this.loading = true;
+    this.subscription = this._imagenesService.getTerminoBusqueda().subscribe(data => {
       this.termino = data;
+      this.paginaActual = 1;
+      this.loading = true;
       this.obtenerImagenes();
-      
+
     })
-   }
+  }
 
   ngOnInit(): void {
   }
 
 
-  obtenerImagenes(){
-    this.listImagenes =[]
-    this._imagenesService.getImagenes(this.termino).subscribe( ({hits, totalHits}) =>{
+  obtenerImagenes() {
+    this.listImagenes = []
+    this._imagenesService.getImagenes(this.termino, this.imagenesPorPaginas, this.paginaActual).subscribe(({ hits, totalHits }) => {
       this.loading = false;
-      
-      if(hits.length === 0 ){
+
+
+      if (hits.length === 0) {
         this._imagenesService.setError('No encontramos ningun resultado');
         this.loading = false;
         return;
       }
-    
+
       //Paginacion.
-      this.calcularTotalPaginas = Math.ceil(totalHits/this.imagenesPorPaginas);
-      
+      this.calcularTotalPaginas = Math.ceil(totalHits / this.imagenesPorPaginas);
 
       this.listImagenes = hits;
-    }, error =>{
+    }, error => {
       this._imagenesService.setError('Ocurrior un errror');
       this.loading = false;
     })
 
-  } 
+  }
 
 
-  paginaAnterior(){
+  paginaAnterior() {
     this.paginaActual -= 1;
+    this.loading = true;
+    this.listImagenes = [];
+    this.obtenerImagenes();
   }
 
-  paginaSiguiente(){
+  paginaSiguiente() {
     this.paginaActual += 1;
+    this.loading = true;
+    this.listImagenes = [];
+    this.obtenerImagenes();
   }
+
+  paginaAnteriorClas() {
+    if (this.paginaActual === 1) {
+      return false;
+    } else {
+      return true;
+    }
   }
+
+
+  paginaSiguienteClass() {
+    if (this.paginaActual === this.calcularTotalPaginas) {
+      return false;
+    } else {
+      return true;
+    }
+  }
+
+}
 
 
 

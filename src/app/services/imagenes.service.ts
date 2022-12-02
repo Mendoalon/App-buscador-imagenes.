@@ -30,13 +30,10 @@ export class ImagenesService {
       return this.$terminoBusqueda.asObservable();
     }
 
-    getImagenes(termino: string):Observable<any> {
+    getImagenes(termino: string,imagenesPorPaginas: number, paginaActual: number):Observable<any> {
       const KEY = '27083919-3c5c96a3e7bb0128404bb36e9'
-      const URL = `https://pixabay.com/api/?key=${KEY}&q=${termino}`
-
-      console.log(URL);
-      
-
+      const URL = `https://pixabay.com/api/?key=${KEY}&q=${termino}&per_page=${imagenesPorPaginas}&page=${paginaActual}`
+     
       return this.Http.get(URL)
      }
 }
